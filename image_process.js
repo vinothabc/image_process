@@ -11,5 +11,14 @@ module.exports = {
 		}) 
 		.write(save_path);
 		return save_path; 
+	},
+
+	resize_image : async function(path,width,height,save_path) {
+		const image = await Jimp.read(path); 
+		image.resize(width, height, function(err){ 
+		    if (err) throw err; 
+		}) 
+		.write(save_path);
+		return save_path; 
 	}
 }
