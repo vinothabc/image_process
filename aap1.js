@@ -168,123 +168,25 @@ router.get('/get_files', async function(req,res) {
   height = parseInt(req.query.height);
   var resi = new crop_img(width,height,appDir);
 
-    var file ='';
+  var file ='';
   database.GetOneFile(image).then(async function(item){
-    org_image = item.name;
-    var save_path = appDir+'/cache/resize/'+org_image+'-'+width+'-'+height+'.png';
+  org_image = item.name;
   resi.setFunction(req.query.crop)
   resi.setOrginalFile(org_image)
-  resi.getSavePath()
- resi.ImageProcess().then(function(file,err){
-  fs.readFile(file, function(err1, img) {
-    if (err1) throw err1; // Fail if the file can't be read.
-    else {
-      res.writeHead(200, {'Content-Type': 'image/png'});
-      res.end(img);
-    }
+  resi.getSavePath();
+  resi.ifexsits1();
+  resi.ImageProcess().then(function(file,err){
+    fs.readFile(file, function(err1, img) {
+      if (err1) throw err1; // Fail if the file can't be read.
+      else {
+        res.writeHead(200, {'Content-Type': 'image/png'});
+        res.end(img);
+      }
+    });
   });
- });
-
-  // res.json(resi);
   return false;
-    if(req.query.crop=='crop'){
-      try{
-
-          try {
-              if (fs.existsSync(save_path)) {
-                //file exists
-                file = save_path;
-                console.log('already');
-              }
-              else{
-                  try{
-
-                    file = await image_process.crop_image('./uploads/'+org_image,width,height,save_path);
-                console.log('new image');
-                  
-                  }
-                  catch(err){
-                  
-                    console.log('errrrr');
-                  
-                  }
-              }
-            } catch(err) {
-            console.log('err');
-            }
-          console.log(file);
-
-
-        try{
-           fs.readFile(file, function(err, data) {
-            if (err) throw err; // Fail if the file can't be read.
-            else {
-              res.writeHead(200, {'Content-Type': 'image/png'});
-              res.end(data); // Send the file data to the browser.
-            }
-          });
-        }
-        catch (err){
-          console.log(err);
-        }
-
-      }
-      catch(error){
-        console.log('error');
-        return error;
-      }
-    }
-    else if(req.query.crop=='resize'){
-      try{
-          var save_path = appDir+'/cache/resize/'+org_image+'-'+width+'-'+height+'.png';
-
-          try {
-              if (fs.existsSync(save_path)) {
-                //file exists
-                file = save_path;
-                console.log('already');
-              }
-              else{
-                  try{
-
-                    file = await image_process.resize_image('./uploads/'+org_image,width,height,save_path);
-                console.log('new image');
-                  
-                  }
-                  catch(err){
-                  
-                    console.log('errrrr');
-                  
-                  }
-              }
-            } catch(err) {
-            console.log('err');
-            }
-          console.log(file);
-
-
-        try{
-           fs.readFile(file, function(err, data) {
-            if (err) throw err; // Fail if the file can't be read.
-            else {
-              res.writeHead(200, {'Content-Type': 'image/png'});
-              res.end(data); // Send the file data to the browser.
-            }
-          });
-        }
-        catch (err){
-          console.log(err);
-        }
-
-      }
-      catch(error){
-        console.log('error');
-        return error;
-      }
-    }
-   
-
-
+  res.json(resi);
+  return false;
   },function(err){
     console.log('erroe'+err);
   });

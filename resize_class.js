@@ -9,6 +9,7 @@ function Resize(width,height,appDir) {
 }
 Resize.prototype.setOrginalFile = function(org_file) {        
   this.orginal_file = org_file;
+  this.orginal_file_path = this.appDir+'/uploads/'+this.orginal_file;
 }
 Resize.prototype.setFunction = function(class_name) {        
     this.class_name = class_name;
@@ -23,16 +24,18 @@ Resize.prototype.getSavePath = function() {
     return path;
 };
 
-Resize.prototype.ifexsits = function() {        
+Resize.prototype.ifexsits1 = function() {        
   this.ifexsits = fs.existsSync(this.save_path);
 };
-Resize.prototype.functionprocess =  async function() {
-    this.file =  await image_process[this.class_name](this.orginal_file,this.width,this.height,this.save_path);
-	console.log(this.file);
-};
 Resize.prototype.ImageProcess = async function() {
-	if(!this.ifexsits)
-		await this.functionprocess;
+	if(!this.ifexsits){
+		try{
+		this.file = await image_process[this.class_name](this.orginal_file_path,this.width,this.height,this.save_path);
+		}
+		catch(e){
+			console.log(e);
+		}
+	}
 	else
 		this.file = this.save_path;
 	return this.file;
@@ -48,7 +51,3 @@ Resize.prototype.getImage = async function() {
 };
 
 module.exports = Resize;
-/*
-var justAGuy = new Person();
-justAGuy.setName('martin');
-justAGuy.sayHello(); // Will output 'Hello, my name is Martin, I have ID: id_1'*/
