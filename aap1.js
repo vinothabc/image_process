@@ -44,7 +44,7 @@ var insertDocuments = function(db, file_name, callback) {
 
 
 
-router.get('/get_files', async function(req,res) {
+router.get('/get_files1', async function(req,res) {
   var database = require('./db.js');
   var image_process = require('./image_process.js');
 
@@ -57,6 +57,138 @@ router.get('/get_files', async function(req,res) {
     if(req.query.crop=='crop'){
       try{
           var save_path = appDir+'/cache/crop/'+org_image+'-'+width+'-'+height+'.png';
+
+          try {
+              if (fs.existsSync(save_path)) {
+                //file exists
+                file = save_path;
+                console.log('already');
+              }
+              else{
+                  try{
+
+                    file = await image_process.crop_image('./uploads/'+org_image,width,height,save_path);
+                console.log('new image');
+                  
+                  }
+                  catch(err){
+                  
+                    console.log('errrrr');
+                  
+                  }
+              }
+            } catch(err) {
+            console.log('err');
+            }
+          console.log(file);
+
+
+        try{
+           fs.readFile(file, function(err, data) {
+            if (err) throw err; // Fail if the file can't be read.
+            else {
+              res.writeHead(200, {'Content-Type': 'image/png'});
+              res.end(data); // Send the file data to the browser.
+            }
+          });
+        }
+        catch (err){
+          console.log(err);
+        }
+
+      }
+      catch(error){
+        console.log('error');
+        return error;
+      }
+    }
+    else if(req.query.crop=='resize'){
+      try{
+          var save_path = appDir+'/cache/resize/'+org_image+'-'+width+'-'+height+'.png';
+
+          try {
+              if (fs.existsSync(save_path)) {
+                //file exists
+                file = save_path;
+                console.log('already');
+              }
+              else{
+                  try{
+
+                    file = await image_process.resize_image('./uploads/'+org_image,width,height,save_path);
+                console.log('new image');
+                  
+                  }
+                  catch(err){
+                  
+                    console.log('errrrr');
+                  
+                  }
+              }
+            } catch(err) {
+            console.log('err');
+            }
+          console.log(file);
+
+
+        try{
+           fs.readFile(file, function(err, data) {
+            if (err) throw err; // Fail if the file can't be read.
+            else {
+              res.writeHead(200, {'Content-Type': 'image/png'});
+              res.end(data); // Send the file data to the browser.
+            }
+          });
+        }
+        catch (err){
+          console.log(err);
+        }
+
+      }
+      catch(error){
+        console.log('error');
+        return error;
+      }
+    }
+   
+
+
+  },function(err){
+    console.log('erroe'+err);
+  });
+});
+
+router.get('/get_files', async function(req,res) {
+  var database = require('./db.js');
+  var image_process = require('./image_process.js');
+  var crop_img = require('./resize_class.js');
+
+  image = req.query.image;
+  width = parseInt(req.query.width);
+  height = parseInt(req.query.height);
+  var resi = new crop_img(width,height,appDir);
+
+    var file ='';
+  database.GetOneFile(image).then(async function(item){
+    org_image = item.name;
+    var save_path = appDir+'/cache/resize/'+org_image+'-'+width+'-'+height+'.png';
+  resi.setFunction(req.query.crop)
+  resi.setOrginalFile(org_image)
+  resi.getSavePath()
+ resi.ImageProcess().then(function(file,err){
+  fs.readFile(file, function(err1, img) {
+    if (err1) throw err1; // Fail if the file can't be read.
+    else {
+      res.writeHead(200, {'Content-Type': 'image/png'});
+      res.end(img);
+    }
+  });
+ });
+
+  // res.json(resi);
+  return false;
+    if(req.query.crop=='crop'){
+      try{
 
           try {
               if (fs.existsSync(save_path)) {

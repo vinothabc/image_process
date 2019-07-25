@@ -1,6 +1,7 @@
 //image_process.js
 var Jimp = require('jimp');
 const sharp = require('sharp');
+var fs = require('fs');
 
 
 module.exports = {
@@ -20,6 +21,7 @@ module.exports = {
 					    background: { r: 255, g: 255, b: 255, alpha: 0.5 }
 					  })
 					  .toFile(save_path);
+		console.log(save_path);
 		return save_path; 
 	}
 }
